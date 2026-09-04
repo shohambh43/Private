@@ -1,0 +1,180 @@
+{%- style -%}
+
+  .boutiq-landing-button-wrapper {
+    text-align: {{ section.settings.align }};
+    margin: 8px;
+  }
+  .boutiq-landing-button {
+    background-color: {{ section.settings.background }};
+    color: {{ section.settings.color}};
+    padding: 10px 18px;
+    display: inline-block;
+    border: 1px solid {{ section.settings.border_color }};
+    border-radius: 4px;
+    font-size: {{ section.settings.font_size }};;
+    font-weight: {{ section.settings.font_weight }};;
+    {% if section.settings.uppercase_button_text %}
+    text-transform: uppercase;
+    {% endif %}
+    cursor: pointer;
+  }
+  .boutiq-landing-button:hover {
+    opacity: 0.8;
+  }
+  
+{%- endstyle -%}]
+
+<article class="site-page" data-template-page>
+  <header class="page-masthead">
+    <h1 class="page-title">
+      {{ page.title }}
+    </h1>
+  </header>
+
+  {% if page.content != blank %}
+    <div class="page-content rte">
+      {{ page.content }}
+<div id=boutiq-landing class='boutiq-landing-button-wrapper'>
+    {% if section.settings.cta_action == 'schedule' %}
+      <div class='boutiq-landing-button' onclick='boutiqApp.schedule()'>{{ section.settings.cta_text }}</div>
+    {% else %}
+      <div class='boutiq-landing-button' onclick='boutiqApp.open()'>{{ section.settings.cta_text }}</div>
+    {% endif %}
+    </div>
+  
+
+    </div>
+  {% endif %}
+</article>
+<div style='max-width: 1200px; margin: 0 auto;'>{% include 'editorify_widget', custom_page:true %}</div>
+{% schema %}
+{
+  "name": "Boutiq landing",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Button settings"
+    },
+    {
+      "id": "cta_action",
+      "type": "select",
+      "label": "Button action",
+      "options": [
+        {
+          "value": "all",
+          "label": "Schedule and call"
+        },
+        {
+          "value": "schedule",
+          "label": "Schedule only"
+        }
+      ],
+      "default": "all"
+    },
+    {
+      "id": "cta_text",
+      "type": "text",
+      "label": "Button text",
+      "default": "Video call with our team"
+    },
+    {
+      "id": "color",
+      "type": "color",
+      "label": "Text color",
+      "default": "#FFF"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background color",
+      "default": "#6E76F2"
+    },
+    {
+      "id": "border_color",
+      "type": "color",
+      "label": "Border color",
+      "default": "#6E76F2"
+    },
+    {
+      "id": "font_size",
+      "type": "select",
+      "label": "Font size",
+      "options": [
+        {
+          "value": "11px",
+          "label": "11"
+        },
+        {
+          "value": "12px",
+          "label": "12"
+        },
+        {
+          "value": "13px",
+          "label": "13"
+        },
+        {
+          "value": "14px",
+          "label": "14"
+        },
+        {
+          "value": "16px",
+          "label": "16"
+        },
+        {
+          "value": "18px",
+          "label": "18"
+        }
+      ],
+      "default": "16px"
+    },
+    {
+      "id": "font_weight",
+      "type": "select",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "normal",
+          "label": "normal"
+        },
+        {
+          "value": "bold",
+          "label": "bold"
+        }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "checkbox",
+      "id": "uppercase_button_text",
+      "label": "Uppercase",
+      "default": true
+    },
+    {
+      "id": "align",
+      "type": "radio",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "left"
+        },
+        {
+          "value": "center",
+          "label": "center"
+        },
+        {
+          "value": "right",
+          "label": "right"
+        }
+      ],
+      "default": "center"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Boutiq landing",
+      "category": "Boutiq"
+    }
+  ]
+}
+{%- endschema -%}

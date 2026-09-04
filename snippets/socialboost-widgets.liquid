@@ -1,0 +1,7 @@
+{% if customer %}
+                                    {% assign customerId = customer.id %}
+                                    {% assign customerName = customer.name %}
+                                    {% assign customerEmail = customer.email %}
+                                {% endif %}
+                                <script>AMSBConfig = {user : {name : "{{ customerName }}", email : "{{ customerEmail }}", id : "{{ customerId }}", country : ""}, site : {id : "44472", domain : "nexbo.myshopify.com", platform : "sb_shopify"}, version : "1533263480"};</script>
+                                
