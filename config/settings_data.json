@@ -548,10 +548,10 @@
       "static-announcement": {
         "type": "static-announcement",
         "settings": {
-          "show_announcement": true,
+          "show_announcement": false,
           "homepage_announcement": false,
-          "announcement_text": "Labor Day Sale: 30% Off Everything — Use Code LABORDAY30",
-          "announcement_text_mobile": "30% OFF Everything | Code LABORDAY30",
+          "announcement_text": "",
+          "announcement_text_mobile": "",
           "announcement_link": "shopify://collections/all",
           "announcement_color": "#ffffff",
           "announcement_background": "#e32619"
