@@ -197,6 +197,7 @@
         "blocks": {
           "static-slideshow-1": {
             "type": "slide",
+            "disabled": true,
             "settings": {
               "background_image": "shopify://shop_images/Gotzeplus-Web-banner1.jpg",
               "title": "Götze Bundle kit, 5 items for $299.90 Peelers & Shears",
@@ -286,6 +287,7 @@
         "blocks": {
           "static-highlights-banners-0": {
             "type": "highlight",
+            "disabled": true,
             "settings": {
               "icon": "icon-delivery",
               "title": "Free Shipping",
@@ -295,6 +297,7 @@
           },
           "static-highlights-banners-3": {
             "type": "highlight",
+            "disabled": true,
             "settings": {
               "icon": "icon-heart",
               "title": "LifeTime Limited Warranty",
@@ -304,6 +307,7 @@
           },
           "static-highlights-banners-1": {
             "type": "highlight",
+            "disabled": true,
             "settings": {
               "icon": "icon-smile",
               "title": "Freebies & Free Stuff",
@@ -313,6 +317,7 @@
           },
           "static-highlights-banners-2": {
             "type": "highlight",
+            "disabled": true,
             "settings": {
               "icon": "icon-people-alternate",
               "title": "24/7 Support",
@@ -845,9 +850,18 @@
           "show_author": false,
           "show_excerpt": true
         }
+      },
+      "dynamic_html_dnNtmw": {
+        "type": "dynamic-html",
+        "name": "Custom HTML",
+        "settings": {
+          "title": "",
+          "custom_html": "<style>\n\n  /* =========================================\n     FULL-BLEED SHOPIFY SECTION\n     Removes the theme's side margins/padding\n     only from the section containing this hero\n  ========================================== */\n\n  .shopify-section:has(.gotze-labor-day-hero) {\n    width: 100% !important;\n    max-width: none !important;\n    margin: 0 !important;\n    padding: 0 !important;\n  }\n\n  .shopify-section:has(.gotze-labor-day-hero) > div,\n  .shopify-section:has(.gotze-labor-day-hero) .page-width,\n  .shopify-section:has(.gotze-labor-day-hero) .section {\n    width: 100% !important;\n    max-width: none !important;\n    margin: 0 !important;\n    padding-left: 0 !important;\n    padding-right: 0 !important;\n  }\n\n\n  /* =========================================\n     HERO\n  ========================================== */\n\n  .gotze-labor-day-hero {\n    position: relative;\n\n    width: 100vw;\n    max-width: 100vw;\n\n    margin-left: calc(50% - 50vw);\n    margin-right: calc(50% - 50vw);\n\n    padding: 0 !important;\n\n    overflow: hidden;\n\n    line-height: 0;\n\n    background: #ffffff;\n\n    /*\n      Original image ratio:\n      1800 × 1000\n    */\n    aspect-ratio: 1800 / 1000;\n  }\n\n\n  /* =========================================\n     IMAGE\n  ========================================== */\n\n  .gotze-labor-day-hero img {\n    display: block;\n\n    width: 100% !important;\n    height: 100% !important;\n\n    max-width: none !important;\n\n    margin: 0 !important;\n    padding: 0 !important;\n\n    object-fit: cover;\n\n    object-position: center center;\n  }\n\n\n  /* =========================================\n     CLICKABLE CTA\n     Invisible area placed over the\n     SHOP 30% OFF button in the image\n  ========================================== */\n\n  .gotze-labor-day-hero__cta {\n\n    position: absolute;\n\n    left: 11%;\n    top: 70%;\n\n    width: 24%;\n    height: 9%;\n\n    display: block;\n\n    z-index: 10;\n\n    background: transparent;\n\n    border: 0;\n\n    border-radius: 999px;\n\n    text-decoration: none !important;\n  }\n\n\n  /*\n    Keyboard accessibility\n  */\n\n  .gotze-labor-day-hero__cta:focus-visible {\n    outline: 3px solid #123b63;\n    outline-offset: 5px;\n  }\n\n\n  /* =========================================\n     DESKTOP\n  ========================================== */\n\n  @media screen and (min-width: 750px) {\n\n    .gotze-labor-day-hero {\n      aspect-ratio: 1800 / 1000;\n    }\n\n  }\n\n\n  /* =========================================\n     TABLET / MOBILE\n  ========================================== */\n\n  @media screen and (max-width: 749px) {\n\n    .gotze-labor-day-hero {\n\n      width: 100vw;\n      max-width: 100vw;\n\n      margin-left: calc(50% - 50vw);\n      margin-right: calc(50% - 50vw);\n\n      aspect-ratio: 1800 / 1000;\n    }\n\n    .gotze-labor-day-hero img {\n      width: 100% !important;\n      height: 100% !important;\n\n      object-fit: cover;\n      object-position: center center;\n    }\n\n    .gotze-labor-day-hero__cta {\n\n      left: 11%;\n      top: 70%;\n\n      width: 24%;\n      height: 9%;\n    }\n\n  }\n\n</style>\n\n\n<div class=\"gotze-labor-day-hero\">\n\n  <img src=\"https://cdn.shopify.com/s/files/1/0016/2856/9664/files/wide_clean_promotional_banner_image_for_a_kitchen.png?v=1788523084\" alt=\"Götze Labor Day Sale - 30% Off Everything\" loading=\"eager\">\n\n  <a class=\"gotze-labor-day-hero__cta\" href=\"/discount/LABORDAY30?redirect=/collections/all\" aria-label=\"Shop 30% off\"></a>\n\n</div>"
+        }
       }
     },
     "content_for_index": [
+      "dynamic_html_dnNtmw",
       "1646631571ddda5488",
       "dynamic_html_KLU8dg",
       "1497982042455",
@@ -896,11 +910,6 @@
           "button_horizontal_position": "bottom_left",
           "button_vertical_position": "lowest"
         }
-      },
-      "1143683040400472741": {
-        "type": "shopify://apps/cwilltrustoo-reviews/blocks/trustoo-review-switch/c8f15077-6475-4e86-ad06-b66038d5ba2c",
-        "disabled": false,
-        "settings": {}
       }
     }
   },
