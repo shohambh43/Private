@@ -150,6 +150,14 @@
       "no_shipping_required": "Your cart does not require shipping.",
       "shipment_too_heavy": "Sorry, but this shipment is too heavy to ship.",
       "error_general": "Sorry, we're not able to calculate your shipping at this time."
+    },
+    "free_shipping": {
+      "progress_message": "Spend [amount] more for FREE shipping!",
+      "reached_message": "You've unlocked FREE shipping!"
+    },
+    "recommendations": {
+      "view_product": "View product",
+      "add_to_cart": "Add to cart"
     }
   },
   "contact": {

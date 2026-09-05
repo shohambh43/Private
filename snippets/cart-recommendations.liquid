@@ -1,0 +1,28 @@
+{%- comment -%}
+  Cart cross-sell block ("you may also like") for the cart page.
+  Included from sections/static-cart.liquid.
+
+  Uses Shopify's built-in Product Recommendations API (no manual curation):
+  the last product added to the cart is used as the seed product, and
+  assets/cart-enhancements.js fetches
+  /recommendations/products.json?product_id=...&limit=...
+  then renders simple tiles client-side. This intentionally does NOT reuse
+  the theme's compiled "static-product-recommendations" JS section, since
+  that bundle is only wired up for sections discovered at initial page load
+  and is not guaranteed to initialize correctly-clicking controls on
+  markup injected later — keeping this self-contained avoids relying on
+  unverified internals of that compiled bundle.
+{%- endcomment -%}
+{%- if section.settings.enable_cart_recommendations and has_items -%}
+  {%- assign last_line_item = cart.items.last -%}
+  <div
+    class="cart-recommendations"
+    data-cart-recommendations
+    data-product-id="{{ last_line_item.product_id }}"
+    data-limit="4"
+    data-heading="{{ section.settings.cart_recommendations_heading | escape }}"
+    data-view-product-text="{{ 'cart.recommendations.view_product' | t | escape }}"
+    data-add-to-cart-text="{{ 'cart.recommendations.add_to_cart' | t | escape }}"
+    hidden
+  ></div>
+{%- endif -%}

@@ -1,3 +1,5 @@
+{{ 'cart-enhancements.css' | asset_url | stylesheet_tag }}
+
 {% assign is_customer = false %}
 {% if shop.customer_accounts_enabled and customer %}
   {% assign is_customer = true %}
@@ -121,6 +123,8 @@
             </div>
           {% endif %}
 
+          {% include 'cart-free-shipping-bar' %}
+
           <div class="cart-final-total">
             <ul class="discount-list" data-cart-discounts aria-label="{{ 'product.general.discounts' | t }}">
               {%
@@ -229,7 +233,11 @@
       </div>
     {% endif %}
   </section>
+
+  {% include 'cart-recommendations' %}
 </form>
+
+<script src="{{ 'cart-enhancements.js' | asset_url }}" defer="defer"></script>
 
 {% schema %}
 {
@@ -258,6 +266,40 @@
       "id": "shipping_calc_default_country",
       "label": "Default country",
       "default": "United States"
+    },
+    {
+      "type": "header",
+      "content": "Free shipping progress bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_free_shipping_bar",
+      "label": "Enable free shipping progress bar",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "free_shipping_threshold",
+      "label": "Free shipping threshold ($)",
+      "default": 199,
+      "info": "Shown to customers as \"spend $X more for free shipping\". Must match your actual free shipping policy/rate settings \u2014 update here if that ever changes."
+    },
+    {
+      "type": "header",
+      "content": "Cart cross-sell"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_cart_recommendations",
+      "label": "Enable \"you may also like\" block",
+      "info": "Uses Shopify's built-in product recommendation engine \u2014 no manual curation needed.",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cart_recommendations_heading",
+      "label": "Heading",
+      "default": "You may also like"
     }
   ],
   "blocks": [

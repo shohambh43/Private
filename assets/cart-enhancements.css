@@ -1,0 +1,109 @@
+/* Cart page enhancements: free shipping progress bar + cross-sell recommendations.
+   Scoped under their own classes so they don't touch the theme's compiled Sass. */
+
+/* ---- Free shipping progress bar ---- */
+.cart-free-shipping-bar {
+  margin: 0 0 20px;
+  padding: 14px 16px;
+  background-color: #f7f7f7;
+  border-radius: 4px;
+}
+
+.cart-free-shipping-bar-message {
+  margin: 0 0 8px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.cart-free-shipping-bar-track {
+  height: 6px;
+  background-color: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.cart-free-shipping-bar-fill {
+  height: 100%;
+  width: 0%;
+  background-color: #1a1a1a;
+  border-radius: 3px;
+  transition: width 0.35s ease;
+}
+
+.cart-free-shipping-bar.is-complete .cart-free-shipping-bar-fill {
+  background-color: #2e7d32;
+}
+
+/* ---- Cross-sell recommendations ---- */
+.cart-recommendations {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.cart-recommendations[hidden] {
+  display: none;
+}
+
+.cart-recommendations-title {
+  margin: 0 0 16px;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cart-recommendations-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cart-recommendations-item {
+  text-align: center;
+}
+
+.cart-recommendations-item-image-link {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.cart-recommendations-item-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.cart-recommendations-item-title {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 4px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.cart-recommendations-item-price {
+  display: block;
+  font-size: 13px;
+  color: #6b6b6b;
+  margin-bottom: 8px;
+}
+
+.cart-recommendations-item form {
+  margin: 0;
+}
+
+.cart-recommendations-item .button-primary,
+.cart-recommendations-item .button-secondary {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+@media (max-width: 480px) {
+  .cart-recommendations-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
