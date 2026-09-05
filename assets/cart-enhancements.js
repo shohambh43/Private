@@ -20,6 +20,16 @@
     }
   }
 
+  function readJsonScript(root, selector) {
+    var script = root.querySelector(selector);
+    if (!script) return {};
+    try {
+      return JSON.parse(script.textContent) || {};
+    } catch (e) {
+      return {};
+    }
+  }
+
   // Minimal port of Shopify's money_format helper (handles the token
   // formats Shopify money_format settings actually use).
   function formatMoney(cents, format) {
@@ -79,10 +89,13 @@
   /* ---------------------------------------------------------------------
    * Free shipping progress bar
    * ------------------------------------------------------------------- */
+  var freeShippingBars = [];
+
   function initFreeShippingBar(bar, moneyFormat) {
     var threshold = parseInt(bar.getAttribute('data-threshold-cents'), 10);
-    var msgProgress = bar.getAttribute('data-msg-progress') || '';
-    var msgReached = bar.getAttribute('data-msg-reached') || '';
+    var strings = readJsonScript(bar, 'script[data-free-shipping-strings]');
+    var msgProgress = strings.progress || '';
+    var msgReached = strings.reached || '';
     var fill = bar.querySelector('[data-free-shipping-fill]');
     var track = bar.querySelector('.cart-free-shipping-bar-track');
     var msgEl = bar.querySelector('[data-free-shipping-message]');
@@ -123,6 +136,7 @@
     }
 
     refresh();
+    freeShippingBars.push(refresh);
 
     // The cart page updates item quantities/removals via AJAX without a
     // full reload. Watch the totals the theme already updates so the bar
@@ -142,23 +156,55 @@
     }
   }
 
+  function refreshAllFreeShippingBars() {
+    freeShippingBars.forEach(function (refresh) {
+      refresh();
+    });
+  }
+
   /* ---------------------------------------------------------------------
    * Cross-sell recommendations
    * ------------------------------------------------------------------- */
-  function renderRecommendationItem(product, moneyFormat, container) {
+  function addVariantToCart(variantId, button, strings) {
+    var originalText = button.textContent;
+    button.disabled = true;
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: variantId, quantity: 1 })
+    })
+      .then(function (r) {
+        if (!r.ok) throw new Error('add to cart failed');
+        return r.json();
+      })
+      .then(function () {
+        button.textContent = strings.added || originalText;
+        refreshAllFreeShippingBars();
+        // Reload so the cart's line-item list (rendered by the theme's own
+        // compiled JS) picks up the newly added item too.
+        window.location.reload();
+      })
+      .catch(function () {
+        button.disabled = false;
+        button.textContent = originalText;
+      });
+  }
+
+  function renderRecommendationItem(product, moneyFormat, strings) {
     var li = document.createElement('li');
     li.className = 'cart-recommendations-item';
 
     var image = product.featured_image || (product.images && product.images[0]);
     var imageHtml = '';
     if (image) {
-      var imageUrl = typeof image === 'string' ? image : image;
       imageHtml =
         '<a class="cart-recommendations-item-image-link" href="' +
         product.url +
         '">' +
         '<img class="cart-recommendations-item-image" src="' +
-        imageUrl +
+        image +
         '" alt="' +
         (product.title || '').replace(/"/g, '&quot;') +
         '" loading="lazy" width="200" height="200">' +
@@ -166,27 +212,7 @@
     }
 
     var priceFormatted = formatMoney(product.price, moneyFormat);
-
-    var actionHtml = '';
-    if (product.variants && product.variants.length === 1) {
-      actionHtml =
-        '<form action="/cart/add" method="post" enctype="multipart/form-data">' +
-        '<input type="hidden" name="id" value="' +
-        product.variants[0].id +
-        '">' +
-        '<input type="hidden" name="return_to" value="/cart">' +
-        '<button type="submit" class="button-secondary">' +
-        container.getAttribute('data-add-to-cart-text') +
-        '</button>' +
-        '</form>';
-    } else {
-      actionHtml =
-        '<a class="button-secondary" href="' +
-        product.url +
-        '">' +
-        container.getAttribute('data-view-product-text') +
-        '</a>';
-    }
+    var hasSingleVariant = product.variants && product.variants.length === 1;
 
     li.innerHTML =
       imageHtml +
@@ -197,8 +223,28 @@
       '</a>' +
       '<span class="cart-recommendations-item-price">' +
       priceFormatted +
-      '</span>' +
-      actionHtml;
+      '</span>';
+
+    var actionEl;
+    if (hasSingleVariant) {
+      actionEl = document.createElement('button');
+      actionEl.type = 'button';
+      actionEl.className = 'button-secondary';
+      actionEl.textContent = strings.addToCart;
+      actionEl.addEventListener('click', function () {
+        addVariantToCart(product.variants[0].id, actionEl, strings);
+      });
+    } else {
+      actionEl = document.createElement('a');
+      actionEl.className = 'button-secondary';
+      actionEl.href = product.url;
+      actionEl.textContent = strings.viewProduct;
+    }
+
+    var actionWrap = document.createElement('div');
+    actionWrap.className = 'cart-recommendations-item-action';
+    actionWrap.appendChild(actionEl);
+    li.appendChild(actionWrap);
 
     return li;
   }
@@ -207,6 +253,11 @@
     var productId = container.getAttribute('data-product-id');
     var limit = container.getAttribute('data-limit') || '4';
     if (!productId) return;
+
+    var strings = readJsonScript(
+      container,
+      'script[data-cart-recommendations-strings]'
+    );
 
     var url =
       '/recommendations/products.json?product_id=' +
@@ -225,14 +276,14 @@
 
         var heading = document.createElement('h2');
         heading.className = 'cart-recommendations-title';
-        heading.textContent = container.getAttribute('data-heading') || '';
+        heading.textContent = strings.heading || '';
 
         var list = document.createElement('ul');
         list.className = 'cart-recommendations-list';
 
         products.forEach(function (product) {
           list.appendChild(
-            renderRecommendationItem(product, moneyFormat, container)
+            renderRecommendationItem(product, moneyFormat, strings)
           );
         });
 

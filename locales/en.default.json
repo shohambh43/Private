@@ -157,7 +157,8 @@
     },
     "recommendations": {
       "view_product": "View product",
-      "add_to_cart": "Add to cart"
+      "add_to_cart": "Add to cart",
+      "added": "Added!"
     }
   },
   "contact": {

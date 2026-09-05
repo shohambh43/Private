@@ -9,9 +9,18 @@
   then renders simple tiles client-side. This intentionally does NOT reuse
   the theme's compiled "static-product-recommendations" JS section, since
   that bundle is only wired up for sections discovered at initial page load
-  and is not guaranteed to initialize correctly-clicking controls on
-  markup injected later — keeping this self-contained avoids relying on
-  unverified internals of that compiled bundle.
+  and is not guaranteed to initialize correctly on markup injected later.
+
+  Text strings are passed to JS via a JSON script tag (not HTML attributes)
+  so apostrophes come through as real characters, matching
+  cart-free-shipping-bar.liquid.
+
+  "Add to cart" on a tile is done via JS fetch to /cart/add.js from a plain
+  <button>, deliberately NOT a real <form action="/cart/add">: a
+  third-party app on this store scans the page for cart-add forms and
+  injects its own payment-badge widget after any it finds, which broke the
+  card grid's layout when tested. Avoiding that literal form keeps this
+  block visually consistent without touching that app's behavior.
 {%- endcomment -%}
 {%- if section.settings.enable_cart_recommendations and has_items -%}
   {%- assign last_line_item = cart.items.last -%}
@@ -20,9 +29,15 @@
     data-cart-recommendations
     data-product-id="{{ last_line_item.product_id }}"
     data-limit="4"
-    data-heading="{{ section.settings.cart_recommendations_heading | escape }}"
-    data-view-product-text="{{ 'cart.recommendations.view_product' | t | escape }}"
-    data-add-to-cart-text="{{ 'cart.recommendations.add_to_cart' | t | escape }}"
     hidden
-  ></div>
+  >
+    <script type="application/json" data-cart-recommendations-strings>
+      {
+        "heading": {{ section.settings.cart_recommendations_heading | json }},
+        "viewProduct": {{ 'cart.recommendations.view_product' | t | json }},
+        "addToCart": {{ 'cart.recommendations.add_to_cart' | t | json }},
+        "added": {{ 'cart.recommendations.added' | t | json }}
+      }
+    </script>
+  </div>
 {%- endif -%}

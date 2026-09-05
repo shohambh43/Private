@@ -3,6 +3,10 @@
   Included from sections/static-cart.liquid.
   Settings (enable_free_shipping_bar, free_shipping_threshold) live in that
   section's schema so the merchant can tune/disable this without code edits.
+
+  Messages are passed to JS via a JSON script tag (not HTML attributes) so
+  apostrophes in the translated strings ("You've unlocked...") come through
+  as real characters instead of literal HTML entities.
 {%- endcomment -%}
 {%- if section.settings.enable_free_shipping_bar and has_items -%}
   {%- assign fs_threshold_cents = section.settings.free_shipping_threshold | times: 100 -%}
@@ -10,9 +14,13 @@
     class="cart-free-shipping-bar"
     data-free-shipping-bar
     data-threshold-cents="{{ fs_threshold_cents }}"
-    data-msg-progress="{{ 'cart.free_shipping.progress_message' | t | escape }}"
-    data-msg-reached="{{ 'cart.free_shipping.reached_message' | t | escape }}"
   >
+    <script type="application/json" data-free-shipping-strings>
+      {
+        "progress": {{ 'cart.free_shipping.progress_message' | t | json }},
+        "reached": {{ 'cart.free_shipping.reached_message' | t | json }}
+      }
+    </script>
     <p class="cart-free-shipping-bar-message" data-free-shipping-message></p>
     <div class="cart-free-shipping-bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
       <div class="cart-free-shipping-bar-fill" data-free-shipping-fill></div>
