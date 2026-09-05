@@ -40,7 +40,8 @@
   {
     "settings": {
       "shipping": {{ section.settings.enable_shipping_calc | json }},
-      "money_format": {{ shop.money_format | strip_html | json }}
+      "money_format": {{ shop.money_format | strip_html | json }},
+      "shop_currency": {{ shop.currency | json }}
     },
     "shipping": {
       "calculate_shipping": {{ 'cart.shipping.calculate_shipping' | t | json }},

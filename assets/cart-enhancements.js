@@ -91,8 +91,46 @@
    * ------------------------------------------------------------------- */
   var freeShippingBars = [];
 
-  function initFreeShippingBar(bar, moneyFormat) {
-    var threshold = parseInt(bar.getAttribute('data-threshold-cents'), 10);
+  // The threshold is entered by the merchant in the shop's own base
+  // currency (e.g. $199 USD). /cart.js reports its totals in whatever
+  // currency the CART is actually in (cart.currency) - normally the same
+  // as the shop's base currency, but this store also has a display-only
+  // currency converter, and some setups genuinely convert cart totals.
+  // Only convert the threshold when there's an actual mismatch, and only
+  // when a real Shopify-provided exchange rate is available - never guess
+  // a rate, since a wrong guess is worse than no conversion.
+  function getThresholdConversionRate(cartCurrency, shopCurrency) {
+    if (!cartCurrency || !shopCurrency || cartCurrency === shopCurrency) {
+      return 1;
+    }
+    if (
+      window.Shopify &&
+      window.Shopify.currency &&
+      window.Shopify.currency.active === cartCurrency &&
+      window.Shopify.currency.rate
+    ) {
+      var rate = parseFloat(window.Shopify.currency.rate);
+      if (!isNaN(rate) && rate > 0) return rate;
+    }
+    if (window.console && window.console.warn) {
+      console.warn(
+        '[cart-enhancements] Cart currency (' +
+          cartCurrency +
+          ') differs from shop currency (' +
+          shopCurrency +
+          ') and no Shopify.currency exchange rate was found. ' +
+          'The free shipping threshold is being compared without conversion, ' +
+          'which may be inaccurate.'
+      );
+    }
+    return 1;
+  }
+
+  function initFreeShippingBar(bar, shopCurrency, shopMoneyFormat) {
+    var thresholdBaseCents = parseInt(
+      bar.getAttribute('data-threshold-cents'),
+      10
+    );
     var strings = readJsonScript(bar, 'script[data-free-shipping-strings]');
     var msgProgress = strings.progress || '';
     var msgReached = strings.reached || '';
@@ -100,11 +138,16 @@
     var track = bar.querySelector('.cart-free-shipping-bar-track');
     var msgEl = bar.querySelector('[data-free-shipping-message]');
 
-    if (!threshold || threshold <= 0 || !fill || !msgEl) return;
+    if (!thresholdBaseCents || thresholdBaseCents <= 0 || !fill || !msgEl) {
+      return;
+    }
 
-    function render(totalCents) {
-      var remainingCents = threshold - totalCents;
-      var pct = Math.min(100, Math.max(0, (totalCents / threshold) * 100));
+    function render(totalCents, thresholdCents, moneyFormat) {
+      var remainingCents = thresholdCents - totalCents;
+      var pct = Math.min(
+        100,
+        Math.max(0, (totalCents / thresholdCents) * 100)
+      );
 
       fill.style.width = pct + '%';
       if (track) track.setAttribute('aria-valuenow', Math.round(pct));
@@ -128,7 +171,14 @@
           return r.json();
         })
         .then(function (cart) {
-          render(cart.total_price);
+          var rate = getThresholdConversionRate(cart.currency, shopCurrency);
+          var thresholdCents = Math.round(thresholdBaseCents * rate);
+          // When the cart is actually in a different currency than the
+          // shop's base currency, format the remaining amount using that
+          // currency's own money format, not the shop's default one.
+          var moneyFormat =
+            rate !== 1 ? '{{amount}} ' + cart.currency : shopMoneyFormat;
+          render(cart.total_price, thresholdCents, moneyFormat);
         })
         .catch(function () {
           /* leave bar in its last known state on network failure */
@@ -299,11 +349,12 @@
   document.addEventListener('DOMContentLoaded', function () {
     var settings = getStaticCartSettings();
     var moneyFormat = settings.money_format || '${{amount}}';
+    var shopCurrency = settings.shop_currency || null;
 
     document
       .querySelectorAll('[data-free-shipping-bar]')
       .forEach(function (bar) {
-        initFreeShippingBar(bar, moneyFormat);
+        initFreeShippingBar(bar, shopCurrency, moneyFormat);
       });
 
     document
