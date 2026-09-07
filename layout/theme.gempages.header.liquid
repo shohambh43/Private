@@ -81,12 +81,9 @@
     <link rel="stylesheet" href="https://cdn.shopify.com/shopifycloud/shopify-plyr/v1.0/shopify-plyr.css">
   
 	{{ shop.metafields.loox["global_html_head"] }}
-{% include 'booster-common' %}
 <!--Gem_Page_Header_Script-->
 {% render 'gem-app-header-scripts' %}
 <!--End_Gem_Page_Header_Script-->
-{% include 'editorify' %} {{ 'daily-deals.scss' | asset_url | stylesheet_tag }}
-{% render 'wsg-custom' %}
 </head>
 
   <body class="template-{{ template.name }}" data-instant-allow-query-string>
@@ -174,9 +171,6 @@
   
 	{{ shop.metafields.loox["global_html_body"] }}
 
-<!-- **BEGIN** Hextom USB Integration // Main Include - DO NOT MODIFY -->
-    
-    <!-- **END** Hextom USB Integration // Main Include - DO NOT MODIFY -->
 
 
  <!--Gem_Page_Footer_Script-->

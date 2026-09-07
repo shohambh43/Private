@@ -155,6 +155,11 @@
       "progress_message": "Spend [amount] more for FREE shipping!",
       "reached_message": "You've unlocked FREE shipping!"
     },
+    "trust_badges": {
+      "secure_checkout": "Secure Checkout",
+      "returns": "30-Day Returns",
+      "free_shipping": "Free Shipping ${{ threshold }}+"
+    },
     "recommendations": {
       "view_product": "View product",
       "add_to_cart": "Add to cart",

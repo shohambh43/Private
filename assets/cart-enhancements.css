@@ -35,6 +35,51 @@
   background-color: #2e7d32;
 }
 
+/* ---- Trust badges (next to checkout button) ----
+   Grouped in a light card (same treatment as the free-shipping bar above
+   it) so it reads as a deliberate reassurance block instead of fine
+   print. Colors are the theme's own configured palette
+   (settings.color_text #4d4d4d, and the same #2e7d32 green the
+   free-shipping bar already uses for its "unlocked" state) rather than
+   new ad-hoc colors. */
+.cart-trust-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px 26px;
+  margin: 16px 0 0;
+  padding: 14px 18px;
+  background-color: #f7f7f7;
+  border-radius: 4px;
+  list-style: none;
+}
+
+.cart-trust-badges-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4d4d4d;
+  line-height: 1.2;
+}
+
+.cart-trust-badges-item svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: #2e7d32;
+}
+
+@media (max-width: 480px) {
+  .cart-trust-badges {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
 /* ---- Cross-sell recommendations ---- */
 .cart-recommendations {
   margin-top: 32px;

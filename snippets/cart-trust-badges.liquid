@@ -1,0 +1,31 @@
+{%- comment -%}
+  Short trust-reassurance row shown next to the main cart checkout button:
+  secure checkout, return window, and the free-shipping threshold. All
+  three reuse facts that already exist elsewhere in the theme/settings
+  (the checkout lock icon setting and the free-shipping-bar threshold)
+  rather than hardcoding separate values that could drift out of sync.
+{%- endcomment -%}
+{%- comment -%}
+  Deliberately NOT using the `money` filter here. This store's
+  shop.money_format is currently misconfigured to append "NIS" to every
+  amount even though shop.currency is USD (confirmed while building this -
+  affects prices sitewide, not something this snippet caused or should try
+  to fix). The free-shipping threshold itself is a plain USD number
+  (matches the report and the free-shipping-bar setting), so it's rendered
+  as a literal "$" amount below instead of inheriting that mislabeling.
+{%- endcomment -%}
+{%- assign trust_fs_threshold = section.settings.free_shipping_threshold -%}
+<ul class="cart-trust-badges" aria-label="Purchase reassurance">
+  <li class="cart-trust-badges-item">
+    {% include 'icon-checkout-lock' %}
+    <span>{{ 'cart.trust_badges.secure_checkout' | t }}</span>
+  </li>
+  <li class="cart-trust-badges-item">
+    {% include 'icon-return' %}
+    <span>{{ 'cart.trust_badges.returns' | t }}</span>
+  </li>
+  <li class="cart-trust-badges-item">
+    {% include 'icon-truck' %}
+    <span>{{ 'cart.trust_badges.free_shipping' | t: threshold: trust_fs_threshold }}</span>
+  </li>
+</ul>
