@@ -169,17 +169,27 @@ function pickVoice(){
   }catch(e){}
 }
 try{pickVoice(); speechSynthesis.onvoiceschanged=function(){pickVoice(); if(view==='home')home()}}catch(e){}
-function say(text,rate){
+var lastSpeech='';
+function say(text,rate,force){
   return new Promise(function(res){
-    if(!S.sound||!('speechSynthesis' in window)) return res();
+    if((!S.sound&&!force)||!('speechSynthesis' in window)){lastSpeech='no-api';return res()}
     try{
-      speechSynthesis.cancel();
-      var u=new SpeechSynthesisUtterance(text); u.lang='he-IL'; if(voice) u.voice=voice; u.rate=rate||0.8;
-      var done=false; function fin(){if(!done){done=true;res()}}
-      u.onend=fin; u.onerror=fin; setTimeout(fin,7000);
-      speechSynthesis.speak(u);
-    }catch(e){res()}
+      var busy=speechSynthesis.speaking||speechSynthesis.pending;
+      if(busy) speechSynthesis.cancel();
+      var go=function(){
+        var u=new SpeechSynthesisUtterance(text); u.lang='he-IL'; if(voice) u.voice=voice; u.rate=rate||0.8; u.volume=1;
+        var done=false; function fin(){if(!done){done=true;res()}}
+        u.onstart=function(){lastSpeech='ok'}; u.onend=fin; u.onerror=function(e){lastSpeech='err:'+(e&&e.error);fin()};
+        setTimeout(fin,7000);
+        if(speechSynthesis.paused) speechSynthesis.resume();
+        speechSynthesis.speak(u);
+      };
+      if(busy) setTimeout(go,80); else go();
+    }catch(e){lastSpeech='exc';res()}
   });
+}
+function unlockSpeech(){
+  try{var u=new SpeechSynthesisUtterance('א');u.lang='he-IL';u.volume=0;if(voice)u.voice=voice;speechSynthesis.speak(u)}catch(e){}
 }
 function sayLetter(L){return say(L.syl+'. '+L.syl+'. '+L.word)}
 function rnd(a){return a[Math.floor(Math.random()*a.length)]}
@@ -203,7 +213,11 @@ function home(){
   view='home';
   var shelf=''; for(var i=0;i<Math.min(STICKERS.length,Math.floor(S.stars/5));i++) shelf+='<span>'+STICKERS[i]+'</span>';
   var next=5-(S.stars%5);
-  var note=(haveVoices&&!voice)?'<div class="note">במכשיר הזה אין קול בעברית, אז הצלילים עלולים להישמע לא נכון. כדאי לנסות בטלפון או בטאבלט עם קול עברי.</div>':'';
+  pickVoice();
+  var vs=!('speechSynthesis' in window)?'הדפדפן הזה לא תומך בקול. נסו לפתוח את הקישור ב-Safari.':(voice?'נמצא קול עברי: '+voice.name:'לא נמצא קול עברי במכשיר.');
+  var note='<div class="note" id="vnote">'+vs+'<br><button class="btn ghost" style="margin-top:8px;min-height:48px" data-a="vtest">🔊 בדיקת קול</button>'+
+    '<div id="vres" style="margin-top:6px"></div>'+
+    '<div class="small" style="margin-top:6px">באייפון: כבו מצב שקט (המתג בצד), הגבירו עוצמה. להוספת קול עברי: הגדרות ← נגישות ← תוכן מדובר ← קולות ← עברית, והורדה של Carmit.</div></div>';
   app.className=''; app.innerHTML=
    '<div class="top"><button class="icon" data-a="snd" aria-label="צליל">'+(S.sound?'🔊':'🔇')+'</button><div style="flex:1"></div><button class="icon" id="pbtn" aria-label="להורים">⚙️</button></div>'+
    '<div class="home" style="display:flex;flex-direction:column"><div class="chick">🐥</div><h1>גן האותיות</h1>'+
@@ -433,7 +447,11 @@ function endSession(){
 var resetArm=false;
 app.addEventListener('click',function(e){
   var b=e.target.closest('[data-a]'); if(!b) return; var a=b.getAttribute('data-a'), i=+b.getAttribute('data-i');
-  if(a==='start') startSession();
+  if(a==='start'){unlockSpeech(); startSession()}
+  else if(a==='vtest'){
+    unlockSpeech(); say('שלום אביגיל, בואי נשחק',0.8,true);
+    setTimeout(function(){var r=document.getElementById('vres'); if(r) r.textContent=lastSpeech==='ok'?'אם לא שמעתם כלום: בדקו מצב שקט ועוצמה.':'לא התחילה השמעה ('+(lastSpeech||'ללא תגובה')+'). נסו Safari, או הוסיפו קול עברי כמתואר.'},1500);
+  }
   else if(a==='home'){try{speechSynthesis.cancel()}catch(x){} G=null; home()}
   else if(a==='garden') garden();
   else if(a==='flower'){var c=b.getAttribute('data-c'); garden(c); sayLetter(LET[c])}
