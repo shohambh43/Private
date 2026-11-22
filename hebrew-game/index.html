@@ -234,7 +234,7 @@ function home(){
   var next=5-(S.stars%5);
   pickVoice();
   var vs=!('speechSynthesis' in window)?'הדפדפן הזה לא תומך בקול. נסו לפתוח את הקישור ב-Safari.':(voice?'נמצא קול עברי: '+voice.name:'לא נמצא קול עברי במכשיר.');
-  var note='<div class="note" id="vnote">'+vs+'<br><button class="btn ghost" style="margin-top:8px;min-height:48px" data-a="vtest">🔊 בדיקת קול</button>'+
+  var note='<div class="note" id="vnote">'+vs+'<br><div style="display:flex;flex-direction:column;gap:6px;margin-top:8px"><button class="btn ghost" style="min-height:48px" data-a="t1">1. צליל פשוט (ביפ)</button><button class="btn ghost" style="min-height:48px" data-a="t2">2. הקלטה מוכנה</button><button class="btn ghost" style="min-height:48px" data-a="vtest">3. קול המחשב בעברית</button></div>'+
     '<div style="margin-top:8px"><label for="vsel">קול:</label> <select id="vsel" style="font-size:16px;max-width:100%">'+voiceOpts()+'</select></div>'+'<div id="vres" style="margin-top:6px"></div>'+
     '<div class="small" style="margin-top:6px">באייפון: כבו מצב שקט (המתג בצד), הגבירו עוצמה. להוספת קול עברי: הגדרות ← נגישות ← תוכן מדובר ← קולות ← עברית, והורדה של Carmit.</div></div>';
   app.className=''; app.innerHTML=
@@ -467,6 +467,12 @@ var resetArm=false;
 app.addEventListener('click',function(e){
   var b=e.target.closest('[data-a]'); if(!b) return; var a=b.getAttribute('data-a'), i=+b.getAttribute('data-i');
   if(a==='start'){unlockSpeech(); startSession()}
+  else if(a==='t1'){
+    var r1=document.getElementById('vres'); try{var AC=window.AudioContext||window.webkitAudioContext,c=new AC(),o=c.createOscillator(),g=c.createGain();o.frequency.value=660;g.gain.value=.3;o.connect(g);g.connect(c.destination);o.start();setTimeout(function(){o.stop()},500);if(r1)r1.textContent='נשלח ביפ. אם לא שמעתם, הבעיה בעוצמה או ביציאת השמע של המחשב או של הלשונית.'}catch(x){if(r1)r1.textContent='הדפדפן חוסם שמע: '+x}
+  }
+  else if(a==='t2'){
+    var r2=document.getElementById('vres'); try{CA.src=CL.f2.a; CA.volume=1; var pr=CA.play(); if(pr&&pr.then) pr.then(function(){if(r2)r2.textContent='ההקלטה מתנגנת. אם לא שמעתם, בדקו עוצמה ולשונית מושתקת.'}).catch(function(x){if(r2)r2.textContent='הדפדפן חוסם הקלטות: '+x})}catch(x){if(r2)r2.textContent='שגיאה: '+x}
+  }
   else if(a==='vtest'){
     unlockSpeech(); say('שלום אביגיל, בואי נשחק',0.8,true);
     setTimeout(function(){var r=document.getElementById('vres'); if(r) r.textContent=lastSpeech==='ok'?'אם לא שמעתם כלום: בדקו מצב שקט ועוצמה.':'לא התחילה השמעה ('+(lastSpeech||'ללא תגובה')+'). נסו Safari, או הוסיפו קול עברי כמתואר.'},1500);
