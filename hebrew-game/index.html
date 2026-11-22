@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>גן האותיות</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: one portrait column. A garden path of 8 questions per round, big touch tiles, a chick guide. Single bright look by choice. */
+:root{
+  --sky:#DDF2FF; --ink:#23305C; --coral:#FF6B5E; --sun:#FFC83D; --mint:#2FC79A; --grape:#6C55F5;
+  --card:#FFFFFF; --line:#BFE1F6; --mute:#5C6A99; --coral-d:#D94A3E; --mint-d:#1C9C77; --sun-d:#D9A21A; --grape-d:#4B37C9;
+  --font:'Rubik','Arial Hebrew','Segoe UI',system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;background:var(--sky);color:var(--ink);font-family:var(--font);direction:rtl;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  user-select:none;-webkit-user-select:none}
+button{font-family:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:4px solid var(--grape);outline-offset:3px}
+#app{max-width:560px;margin:0 auto;padding-block:12px 28px;display:flex;flex-direction:column;gap:14px;min-height:100%}
+
+.top{display:flex;align-items:center;gap:10px}
+.icon{width:52px;height:52px;border-radius:16px;border:3px solid var(--line);background:var(--card);font-size:26px;flex:none}
+.dots{flex:1;display:flex;gap:6px;justify-content:center}
+.dot{flex:1;max-width:30px;height:12px;border-radius:6px;background:var(--line)}
+.dot.on{background:var(--sun)}
+.dot.now{background:var(--grape)}
+.stars{font-weight:800;font-size:22px;min-width:64px;text-align:left;font-variant-numeric:tabular-nums}
+
+.mascot{display:flex;align-items:flex-end;gap:10px}
+.chick{font-size:60px;line-height:1;flex:none}
+.bubble{background:var(--card);border:3px solid var(--line);border-radius:22px 22px 6px 22px;padding:14px 16px;font-size:22px;font-weight:600;line-height:1.3;flex:1}
+
+.stage{background:var(--card);border-radius:28px;border:3px solid var(--line);min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px}
+.pic{font-size:96px;line-height:1}
+.bigword{font-size:84px;font-weight:800;letter-spacing:.04em;line-height:1.1;display:flex;gap:2px}
+.bigword span{padding:0 4px;border-radius:14px}
+.bigword span.lit{background:var(--sun)}
+.speak{width:110px;height:110px;border-radius:50%;border:0;background:var(--grape);color:#fff;font-size:52px;box-shadow:0 7px 0 var(--grape-d)}
+.speak:active{transform:translateY(5px);box-shadow:0 2px 0 var(--grape-d)}
+.slots{display:flex;gap:10px}
+.slot{width:78px;height:92px;border-radius:20px;border:4px dashed var(--line);display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:800}
+.slot.cur{border-color:var(--grape)}
+.slot.f{border:4px solid var(--mint);background:#E4FAF3}
+.wordshow{font-size:44px;font-weight:800}
+.wordshow b{color:var(--coral)}
+
+.opts{display:grid;gap:12px;grid-template-columns:repeat(3,1fr)}
+.opts.n2{grid-template-columns:repeat(2,1fr)}
+.opts.n4{grid-template-columns:repeat(4,1fr)}
+.opts.t4{grid-template-columns:repeat(4,1fr)}
+.opt{min-height:112px;border-radius:26px;border:3px solid var(--line);background:var(--card);font-size:60px;font-weight:800;box-shadow:0 6px 0 var(--line);padding:0}
+.opt.emo{font-size:64px}
+.opt:active{transform:translateY(4px);box-shadow:0 2px 0 var(--line)}
+.opt.wrong{opacity:.3;pointer-events:none}
+.opt.just{animation:wob .4s}
+.opt.hint{border-color:var(--sun);background:#FFF6D6;animation:pulse 1s infinite}
+.opt.right{background:var(--mint);border-color:var(--mint-d);color:#fff;box-shadow:0 6px 0 var(--mint-d)}
+.opt.used{visibility:hidden}
+@keyframes wob{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes pulse{50%{transform:scale(1.06)}}
+
+.foot{display:flex;flex-direction:column;gap:10px;align-items:stretch}
+.reveal{background:var(--card);border-radius:22px;border:3px solid var(--mint);padding:12px 16px;font-size:24px;font-weight:600;text-align:center}
+.reveal b{font-size:40px;color:var(--coral);margin-inline:6px}
+.btn{min-height:64px;border-radius:24px;border:0;font-size:26px;font-weight:800;color:#fff;background:var(--coral);box-shadow:0 7px 0 var(--coral-d);padding:10px 22px}
+.btn:active{transform:translateY(5px);box-shadow:0 2px 0 var(--coral-d)}
+.btn.mint{background:var(--mint);box-shadow:0 7px 0 var(--mint-d)}
+.btn.mint:active{box-shadow:0 2px 0 var(--mint-d)}
+.btn.sun{background:var(--sun);color:var(--ink);box-shadow:0 7px 0 var(--sun-d)}
+.btn.sun:active{box-shadow:0 2px 0 var(--sun-d)}
+.btn.ghost{background:var(--card);color:var(--ink);border:3px solid var(--line);box-shadow:0 6px 0 var(--line);font-size:20px;min-height:54px}
+.row{display:flex;gap:12px}
+.row>*{flex:1}
+
+.home{align-items:center;text-align:center;gap:18px}
+.home h1{margin:0;font-size:44px;font-weight:800;line-height:1.1;text-wrap:balance}
+.home .chick{font-size:110px}
+.shelf{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;min-height:44px;font-size:34px}
+.small{font-size:16px;color:var(--mute);font-weight:400}
+.note{background:#FFF1CC;border-radius:16px;padding:10px 14px;font-size:15px;color:var(--ink)}
+
+.garden{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.flower{background:var(--card);border:3px solid var(--line);border-radius:22px;padding:8px 0;display:flex;flex-direction:column;align-items:center;gap:0;font-size:36px;line-height:1.1}
+.flower b{font-size:34px;font-weight:800}
+.flower.locked{opacity:.4}
+.flower:active{transform:scale(.96)}
+.card{background:var(--card);border-radius:24px;border:3px solid var(--line);padding:14px;text-align:center;font-size:22px}
+.card .pic{font-size:72px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{background:var(--card);border:3px solid var(--line);border-radius:16px;padding:4px 12px;font-size:28px;font-weight:800}
+.chip.g{border-color:var(--mint)}
+.chip.w{border-color:#7CC6F2}
+.end h2{margin:0;font-size:36px}
+.end{text-align:center}
+h3{margin:6px 0 0;font-size:20px}
+
+.panel{background:var(--card);border-radius:20px;border:3px solid var(--line);padding:12px;font-size:15px;text-align:right}
+.bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;min-width:70px;flex:1}
+.bar i{display:block;height:100%;background:var(--mint)}
+.prow{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--line)}
+.prow b{font-size:22px;width:44px;flex:none;text-align:center}
+.prow span{flex:none;color:var(--mute);min-width:70px}
+
+.fx{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+.fx span{position:absolute;top:-40px;font-size:34px;animation:fall 1.6s ease-in forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg);opacity:.8}}
+@media (prefers-reduced-motion:reduce){.fx{display:none}.opt.just,.opt.hint{animation:none}}
+@media (max-width:380px){.opt{font-size:48px;min-height:96px}.bigword{font-size:64px}.pic{font-size:80px}.slot{width:62px;height:76px;font-size:44px}}
+</style>
+
+<div id="app"></div>
+<div class="fx" id="fx" aria-hidden="true"></div>
+
+<script>
+(function(){
+'use strict';
+/* ---------- data ---------- */
+var RAW=[
+['א','אלף','אריה','🦁','a'],['ב','בית','בלון','🎈','b'],['ג','גימל','גמל','🐪','g'],['ד','דלת','דג','🐟','d'],
+['ה','הא','הר','⛰️','h'],['ו','וו','ורד','🌹','v'],['ז','זין','זברה','🦓','z'],['ח','חית','חתול','🐱','x'],
+['ט','טית','טלפון','📞','t'],['י','יוד','יד','✋','y'],['כ','כף','כלב','🐶','k'],['ל','למד','לב','❤️','l'],
+['מ','מם','מים','💧','m'],['נ','נון','נר','🕯️','n'],['ס','סמך','סוס','🐴','s'],['ע','עין','עין','👁️','a'],
+['פ','פא','פיל','🐘','p'],['צ','צדי','צב','🐢','ts'],['ק','קוף','קוף','🐒','k'],['ר','ריש','רכבת','🚂','r'],
+['ש','שין','שמש','☀️','sh'],['ת','תיו','תפוח','🍎','t']];
+var LET={};
+RAW.forEach(function(r){
+  var c=r[0], mark=(c==='ש'?'ׁ':'')+('בכפת'.indexOf(c)>=0?'ּ':'')+'ָ';
+  LET[c]={c:c,name:r[1],word:r[2],emo:r[3],snd:r[4],syl:c+mark};
+});
+var ORDER=['א','ב','ד','ל','מ','ש','י','ג','ר','ס','פ','נ','ה','ת','ח','כ','ק','ע','ז','ט','צ','ו'];
+var FIN={'ם':'מ','ן':'נ','ץ':'צ','ף':'פ','ך':'כ'};
+function base(c){return FIN[c]||c}
+var WORDS=[
+['אבא','👨'],['אמא','👩'],['דג','🐟'],['דב','🐻'],['יד','✋'],['לב','❤️'],['עץ','🌳'],['שן','🦷'],['ים','🌊'],['גן','🌷'],
+['פה','👄'],['כף','🥄'],['תה','🍵'],['צב','🐢'],['פיל','🐘'],['שמש','☀️'],['סוס','🐴'],['ספר','📖'],['מים','💧'],['כלב','🐶'],
+['בית','🏠'],['גמל','🐪'],['דלי','🪣'],['נר','🕯️'],['כוס','🥛'],['פרח','🌸'],['קוף','🐒'],['רכב','🚗'],['ענב','🍇'],['פנס','🔦'],
+['כסא','🪑'],['ירח','🌙'],['לחם','🍞'],['גזר','🥕'],['תות','🍓'],['דגל','🚩']
+].map(function(x){return {w:x[0],emo:x[1]}});
+var STICKERS=['🦄','🐬','🦋','🐞','🐙','🦊','🐼','🐸','🦒','🐳','🦜','🐝','🐧','🐨','🦉','🐠','🐢','🦀','🐰','🦁'];
+var PRAISE=['כל הכבוד!','יופי אביגיל!','וואו, מצוין!','את מדהימה!','בדיוק ככה!','איזו חכמה!'];
+var OOPS=['כמעט! ננסה שוב ביחד.','זה היה קרוב. תקשיבי שוב.','לא נורא, ביחד נצליח.','כמעט שם! עוד פעם.'];
+var HELPDONE=['יפה שהמשכת!','הצלחת! ככה לומדים.','סוף סוף! כל הכבוד על ההתמדה.'];
+
+/* ---------- state ---------- */
+var KEY='abigail-hebrew-v1', mem=null;
+function fresh(){return {items:{},stars:0,sessions:0,total:0,sound:true}}
+function load(){
+  try{var r=localStorage.getItem(KEY); if(r) return Object.assign(fresh(),JSON.parse(r))}catch(e){}
+  return mem||fresh();
+}
+var S=load();
+function save(){mem=S; try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function it(k){return S.items[k]||(S.items[k]={s:0,seen:0,ok:0,miss:0,conf:{}})}
+function unlockedN(){
+  var m=ORDER.filter(function(c){return it('l:'+c).s>=3}).length;
+  return Math.min(22,8+m+Math.floor(S.sessions/3));
+}
+function unlocked(){return ORDER.slice(0,unlockedN())}
+function wordOK(w,U){return w.w.split('').every(function(c){return U.indexOf(base(c))>=0})}
+
+/* ---------- speech ---------- */
+var voice=null, haveVoices=false;
+function pickVoice(){
+  try{
+    var v=speechSynthesis.getVoices(); haveVoices=v.length>0;
+    voice=v.filter(function(x){return /^(he|iw)/i.test(x.lang)})[0]||null;
+  }catch(e){}
+}
+try{pickVoice(); speechSynthesis.onvoiceschanged=function(){pickVoice(); if(view==='home')home()}}catch(e){}
+function say(text,rate){
+  return new Promise(function(res){
+    if(!S.sound||!('speechSynthesis' in window)) return res();
+    try{
+      speechSynthesis.cancel();
+      var u=new SpeechSynthesisUtterance(text); u.lang='he-IL'; if(voice) u.voice=voice; u.rate=rate||0.8;
+      var done=false; function fin(){if(!done){done=true;res()}}
+      u.onend=fin; u.onerror=fin; setTimeout(fin,7000);
+      speechSynthesis.speak(u);
+    }catch(e){res()}
+  });
+}
+function sayLetter(L){return say(L.syl+'. '+L.syl+'. '+L.word)}
+function rnd(a){return a[Math.floor(Math.random()*a.length)]}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+
+/* ---------- fx ---------- */
+function confetti(n){
+  var fx=document.getElementById('fx'), e=['⭐','🎉','✨','🌟','🎈'];
+  for(var i=0;i<(n||16);i++){
+    var s=document.createElement('span'); s.textContent=rnd(e);
+    s.style.left=Math.random()*100+'%'; s.style.animationDelay=(Math.random()*.5)+'s';
+    fx.appendChild(s); (function(x){setTimeout(function(){x.remove()},2400)})(s);
+  }
+}
+
+/* ---------- views ---------- */
+var app=document.getElementById('app'), view='home', G=null, hold=null;
+var FL=['🌱','🌱','🌿','🌷','🌻','🌻'];
+
+function home(){
+  view='home';
+  var shelf=''; for(var i=0;i<Math.min(STICKERS.length,Math.floor(S.stars/5));i++) shelf+='<span>'+STICKERS[i]+'</span>';
+  var next=5-(S.stars%5);
+  var note=(haveVoices&&!voice)?'<div class="note">במכשיר הזה אין קול בעברית, אז הצלילים עלולים להישמע לא נכון. כדאי לנסות בטלפון או בטאבלט עם קול עברי.</div>':'';
+  app.className=''; app.innerHTML=
+   '<div class="top"><button class="icon" data-a="snd" aria-label="צליל">'+(S.sound?'🔊':'🔇')+'</button><div style="flex:1"></div><button class="icon" id="pbtn" aria-label="להורים">⚙️</button></div>'+
+   '<div class="home" style="display:flex;flex-direction:column"><div class="chick">🐥</div><h1>גן האותיות</h1>'+
+   '<div class="bubble" style="max-width:100%">שלום אביגיל! בואי נגדל ביחד גינה של אותיות ומילים.</div>'+
+   '<button class="btn mint" style="width:100%;font-size:34px;min-height:84px" data-a="start">בואי נשחק ▶</button>'+
+   '<button class="btn sun" style="width:100%" data-a="garden">הגינה שלי 🌻</button>'+
+   '<div class="shelf" aria-label="מדבקות">'+(shelf||'<span class="small">עוד '+next+' כוכבים למדבקה הראשונה</span>')+'</div>'+
+   '<div class="small">⭐ '+S.stars+' כוכבים'+(shelf?' · עוד '+next+' למדבקה הבאה':'')+'</div>'+note+'</div>';
+  var pb=document.getElementById('pbtn');
+  function dn(){hold=setTimeout(parent,1100)} function up(){clearTimeout(hold)}
+  pb.addEventListener('pointerdown',dn); pb.addEventListener('pointerup',up); pb.addEventListener('pointerleave',up);
+  pb.addEventListener('keydown',function(e){if(e.key==='Enter')parent()});
+}
+
+function garden(sel){
+  view='garden';
+  var n=unlockedN(), h='';
+  ORDER.slice().sort().forEach(function(c){
+    var d=it('l:'+c), un=ORDER.indexOf(c)<n;
+    h+='<button class="flower'+(un?'':' locked')+'" '+(un?'data-a="flower" data-c="'+c+'"':'disabled')+'><span>'+(un?FL[d.s]:'🌰')+'</span><b>'+c+'</b></button>';
+  });
+  var card='<div class="card">לחצי על פרח כדי לשמוע את הצליל שלו</div>';
+  if(sel){var L=LET[sel]; card='<div class="card"><div class="pic">'+L.emo+'</div><div><b style="font-size:44px;color:var(--coral)">'+L.c+'</b> '+L.syl+' כמו '+L.word+'</div></div>'}
+  app.innerHTML='<div class="top"><button class="icon" data-a="home" aria-label="הביתה">🏠</button><h2 style="margin:0;flex:1;text-align:center">הגינה שלי</h2><div class="stars">⭐ '+S.stars+'</div></div>'+card+
+   '<div class="garden">'+h+'</div><div class="small" style="text-align:center">פרחים גדלים כשמתרגלים אותם. 🌱 → 🌿 → 🌷 → 🌻</div>';
+}
+
+function parent(){
+  view='parent';
+  var h='';
+  unlocked().forEach(function(c){
+    var d=it('l:'+c), conf=Object.keys(d.conf).sort(function(a,b){return d.conf[b]-d.conf[a]}).slice(0,2).map(function(k){return k+'×'+d.conf[k]}).join(' ');
+    h+='<div class="prow"><b>'+c+'</b><div class="bar"><i style="width:'+(d.s*20)+'%"></i></div><span>✓'+d.ok+' · ✗'+d.miss+'</span><span>'+(conf?'מתבלבלת עם '+conf:'')+'</span></div>';
+  });
+  var wk=Object.keys(S.items).filter(function(k){return k[0]==='w'&&S.items[k].seen}).sort();
+  var wh=wk.map(function(k){var d=S.items[k];return '<div class="prow"><b style="width:auto;min-width:70px">'+k.slice(2)+'</b><div class="bar"><i style="width:'+(d.s*20)+'%"></i></div><span>✓'+d.ok+' · ✗'+d.miss+'</span></div>'}).join('');
+  app.innerHTML='<div class="top"><button class="icon" data-a="home" aria-label="הביתה">🏠</button><h2 style="margin:0;flex:1;text-align:center">להורים</h2></div>'+
+   '<div class="panel">המשחק נותן יותר תרגול לאותיות ולמילים שפחות מוצלחות, ושומר שאלה קלה בכל שלוש שאלות כדי שתהיה הצלחה. הפס מראה את רמת הביטחון (מלא = אותה אות נכונה פעמים רבות).<br>הנתונים נשמרים רק בדפדפן הזה.</div>'+
+   '<h3>אותיות</h3><div class="panel">'+h+'</div><h3>מילים</h3><div class="panel">'+(wh||'עוד לא תורגלו מילים')+'</div>'+
+   '<button class="btn ghost" data-a="reset1">איפוס התקדמות</button>';
+}
+
+/* ---------- question engine ---------- */
+function weight(x){var d=it(x.key);return d.seen===0?4:1+Math.pow(5-d.s,1.6)+Math.min(d.miss,4)*0.3}
+function wpick(a){var t=0,w=a.map(function(x){var v=weight(x);t+=v;return v}),r=Math.random()*t;for(var i=0;i<a.length;i++){r-=w[i];if(r<=0)return a[i]}return a[a.length-1]}
+
+function startSession(){
+  S.sessions++; save();
+  G={i:0,n:8,first:0,stars:0,log:[],retry:null,last:null,startStars:S.stars};
+  nextQ();
+}
+function candidates(){
+  var U=unlocked();
+  var L=U.map(function(c){return {key:'l:'+c,kind:'letter',c:c}});
+  var W=S.total>=4?WORDS.filter(function(w){return wordOK(w,U)}).map(function(w){return {key:'w:'+w.w,kind:'word',w:w}}):[];
+  return {L:L,W:W};
+}
+function letterOpts(c,n,d){
+  var L=LET[c], pool=unlocked().filter(function(x){return x!==c&&LET[x].snd!==L.snd});
+  var conf=Object.keys(d.conf).sort(function(a,b){return d.conf[b]-d.conf[a]}).filter(function(x){return pool.indexOf(x)>=0});
+  var picks=[]; if(conf.length&&Math.random()<.6) picks.push(conf[0]);
+  shuffle(pool).forEach(function(x){if(picks.length<n-1&&picks.indexOf(x)<0)picks.push(x)});
+  return shuffle([c].concat(picks)).map(function(x){return {label:x,ok:x===c}});
+}
+function wordOpts(w,n,d,W){
+  var pool=W.filter(function(x){return x.w.w!==w.w&&x.w.emo!==w.emo}).map(function(x){return x.w});
+  var conf=Object.keys(d.conf).filter(function(k){return pool.some(function(p){return p.w===k})});
+  var picks=[]; if(conf.length&&Math.random()<.6) picks.push(pool.filter(function(p){return p.w===conf[0]})[0]);
+  shuffle(pool).forEach(function(x){if(picks.length<n-1&&picks.indexOf(x)<0)picks.push(x)});
+  return shuffle([w].concat(picks)).map(function(x){return {label:x.w,emo:x.emo,ok:x.w===w.w}});
+}
+function makeQ(){
+  var c=candidates(), all=c.L.concat(c.W), item=null, easy=false, win=false;
+  if(G.retry&&G.i>=G.retry.due){item=all.filter(function(x){return x.key===G.retry.key})[0]||null;easy=!!item;G.retry=null}
+  if(!item&&G.i%3===2){
+    var strong=all.filter(function(x){return it(x.key).s>=2&&x.key!==G.last});
+    if(strong.length){item=rnd(strong);win=true}
+  }
+  if(!item){
+    var pool=(c.W.length>=3&&Math.random()<.4)?c.W:c.L;
+    pool=pool.filter(function(x){return x.key!==G.last}); if(!pool.length) pool=all;
+    item=wpick(pool);
+  }
+  var d=it(item.key), n=easy?2:(d.s>=4?4:3), q={item:item,key:item.key,easy:easy,win:win,misses:0,missed:false,done:false,lit:-1};
+  if(item.kind==='letter'){
+    q.type=Math.random()<.5?'sound':'pic'; q.opts=letterOpts(item.c,n,d);
+  }else{
+    var w=item.w; q.type=Math.random()<.5?'build':'read';
+    if(q.type==='read') q.opts=wordOpts(w,Math.min(n,3),d,c.W);
+    else{
+      var chars=w.w.split('');
+      if(d.s>=2&&chars.length===3&&!easy){
+        var ex=shuffle(unlocked().filter(function(x){return w.w.indexOf(x)<0}))[0]; if(ex) chars.push(ex);
+      }
+      q.tiles=shuffle(chars).map(function(ch,i){return {id:i,ch:ch,used:false}}); q.pos=0;
+    }
+  }
+  return q;
+}
+function nextQ(){
+  if(G.i>=G.n) return endSession();
+  G.q=makeQ(); G.last=G.q.key; paint();
+  setTimeout(function(){intro(G.q)},300);
+}
+function itemWord(q){return q.item.kind==='letter'?LET[q.item.c].word:q.item.w.w}
+function intro(q){
+  if(G.q!==q) return;
+  if(q.type==='sound') sayLetter(LET[q.item.c]);
+  else if(q.type==='pic') say(itemWord(q)+'. באיזו אות מתחילה המילה?');
+  else if(q.type==='build') say('בואי נבנה את המילה '+itemWord(q));
+  else say('מה כתוב כאן?');
+}
+
+function paint(){
+  view='q'; var q=G.q, d=it(q.key), dots='';
+  for(var i=0;i<G.n;i++) dots+='<div class="dot'+(i<G.i||(i===G.i&&q.done)?' on':(i===G.i?' now':''))+'"></div>';
+  var prompt, stage, opts='', foot='', cls='opts';
+  if(q.type==='sound'){
+    prompt='איזו אות אומרת ככה?';
+    stage='<button class="speak" data-a="replay" aria-label="שמעי שוב">🔊</button>';
+  }else if(q.type==='pic'){
+    var L=LET[q.item.c];
+    prompt='באיזו אות מתחילה המילה?';
+    stage='<div class="pic">'+L.emo+'</div>'+(q.done?'<div class="wordshow"><b>'+L.word[0]+'</b>'+L.word.slice(1)+'</div>':'<button class="btn ghost" data-a="replay">🔊 שמעי שוב</button>');
+  }else if(q.type==='build'){
+    var w=q.item.w; prompt='בואי נבנה את המילה';
+    var sl=''; for(var i=0;i<w.w.length;i++) sl+='<div class="slot'+(i<q.pos?' f':(i===q.pos?' cur':''))+'">'+(i<q.pos?w.w[i]:'')+'</div>';
+    stage='<div class="pic">'+w.emo+'</div><div class="slots">'+sl+'</div>'+(q.done?'':'<button class="btn ghost" data-a="replay">🔊 שמעי שוב</button>');
+  }else{
+    var w2=q.item.w; prompt='מה כתוב כאן?';
+    stage='<div class="bigword">'+w2.w.split('').map(function(ch,i){return '<span'+(q.lit===i?' class="lit"':'')+'>'+ch+'</span>'}).join('')+'</div>'+
+      (q.done?'':'<button class="btn ghost" data-a="sound">💡 עזרה: נקרא ביחד</button>');
+    cls+=' emo';
+  }
+  if(q.type==='build'){
+    var exp=q.pos<q.item.w.w.length?q.item.w.w[q.pos]:null, hinted=false;
+    q.tiles.forEach(function(t,i){
+      var hint=!hinted&&q.misses>=2&&!t.used&&t.ch===exp; if(hint) hinted=true;
+      opts+='<button class="opt'+(t.used?' used':'')+(hint?' hint':'')+(t.just?' just':'')+'" data-a="tile" data-i="'+i+'" aria-label="'+t.ch+'">'+t.ch+'</button>'; t.just=false;
+    });
+    cls+=q.tiles.length===4?' t4':'';
+  }else{
+    q.opts.forEach(function(o,i){
+      var st=o.state||''; if(!st&&q.misses>=2&&o.ok&&!q.done) st='hint';
+      if(q.done&&o.ok) st='right';
+      opts+='<button class="opt'+(q.type==='read'?' emo':'')+(st?' '+st:'')+(o.just?' just':'')+'" data-a="opt" data-i="'+i+'" aria-label="'+(q.type==='read'?o.emo:o.label)+'">'+(q.type==='read'?o.emo:o.label)+'</button>'; o.just=false;
+    });
+    cls+=' n'+q.opts.length;
+  }
+  var msg=q.msg||(q.easy?'עוד פעם, הפעם קל יותר 🙂':(q.win?'זאת את כבר יודעת!':prompt));
+  if(q.done){
+    var rv=q.item.kind==='letter'?('<b>'+q.item.c+'</b> '+LET[q.item.c].syl+' כמו '+LET[q.item.c].word+' '+LET[q.item.c].emo):('<b style="color:var(--ink)">'+q.item.w.w+'</b> '+q.item.w.emo);
+    foot='<div class="reveal">'+rv+'</div><button class="btn mint" data-a="next">'+(G.i+1>=G.n?'סיום 🎉':'הלאה ←')+'</button>';
+  }
+  app.innerHTML='<div class="top"><button class="icon" data-a="home" aria-label="הביתה">🏠</button><div class="dots">'+dots+'</div><div class="stars">⭐ '+S.stars+'</div></div>'+
+    '<div class="mascot"><div class="chick">'+(q.done?'🐣':'🐥')+'</div><div class="bubble">'+(q.done?q.msg:msg)+'</div></div>'+
+    '<div class="stage">'+stage+'</div><div class="'+cls+'">'+opts+'</div><div class="foot">'+foot+'</div>';
+}
+
+function wrong(q,after){
+  var d=it(q.key); q.misses++;
+  if(!q.missed){
+    q.missed=true; d.miss++; d.s=Math.max(0,d.s-1);
+    G.retry={key:q.key,due:G.i+2};
+  }
+  q.msg=rnd(OOPS); save(); paint();
+  setTimeout(function(){
+    if(q.type==='sound') sayLetter(LET[q.item.c]); else say(itemWord(q));
+  },200);
+  say(q.msg).then(function(){ if(after) after() });
+}
+function finish(q){
+  var d=it(q.key); q.done=true; d.seen++; S.total++; S.stars++; G.stars++;
+  if(!q.missed){d.s=Math.min(5,d.s+1);d.ok++;G.first++} else d.ok++;
+  G.log.push({key:q.key,first:!q.missed});
+  q.msg=q.missed?rnd(HELPDONE):rnd(PRAISE); save(); paint();
+  if(!q.missed) confetti(18); else confetti(8);
+  var w=itemWord(q);
+  var tail=q.item.kind==='letter'?(LET[q.item.c].syl+'. '+w):w;
+  say(q.msg+' '+tail);
+}
+function pickOpt(i){
+  var q=G.q; if(q.done) return; var o=q.opts[i];
+  if(o.ok) return finish(q);
+  o.state='wrong'; o.just=true; var d=it(q.key); d.conf[o.label]=(d.conf[o.label]||0)+1;
+  wrong(q);
+}
+function pickTile(i){
+  var q=G.q; if(q.done) return; var t=q.tiles[i], exp=q.item.w.w[q.pos];
+  if(t.used) return;
+  if(t.ch===exp){
+    t.used=true; q.pos++;
+    if(q.pos>=q.item.w.w.length) return finish(q);
+    paint();
+  }else{
+    t.just=true; var d=it(q.key); d.conf[base(t.ch)]=(d.conf[base(t.ch)]||0)+1; wrong(q);
+  }
+}
+async function soundOut(){
+  var q=G.q; if(q.type!=='read'||q.done||q.busy) return; q.busy=true;
+  var chars=q.item.w.w.split('');
+  for(var i=0;i<chars.length;i++){
+    if(G.q!==q) return; q.lit=i; paint(); var L=LET[base(chars[i])]; await say(L.syl,0.7);
+  }
+  q.lit=-1; if(G.q===q){paint(); await say(q.item.w.w)} q.busy=false;
+}
+
+function endSession(){
+  view='end';
+  var before=Math.floor(G.startStars/5), after=Math.floor(S.stars/5), newS='';
+  for(var i=before;i<after&&i<STICKERS.length;i++) newS+='<span style="font-size:72px">'+STICKERS[i]+'</span>';
+  var seen={},good=[],water=[];
+  G.log.forEach(function(l){ if(seen[l.key]) return; seen[l.key]=1; (l.first?good:water).push(l.key) });
+  function chip(k,cls,e){return '<span class="chip '+cls+'">'+e+' '+k.slice(2)+'</span>'}
+  app.innerHTML='<div class="end" style="display:flex;flex-direction:column;gap:14px"><div class="chick" style="font-size:90px">🐥🎉</div><h2>סיימת סיבוב, אביגיל!</h2>'+
+    '<div style="font-size:34px;font-weight:800">⭐ '+G.stars+' כוכבים חדשים</div>'+
+    (G.first?'<div class="card">הצלחת לבד ב-'+G.first+' מתוך '+G.n+' 💪</div>':'')+
+    (newS?'<div class="card">מדבקה חדשה בשבילך!<br>'+newS+'</div>':'')+
+    (good.length?'<h3>פרחים שפרחו היום 🌻</h3><div class="chips">'+good.map(function(k){return chip(k,'g','🌻')}).join('')+'</div>':'')+
+    (water.length?'<h3>פרחים שקיבלו מים 💧 וימשיכו לגדול</h3><div class="chips">'+water.map(function(k){return chip(k,'w','🌱')}).join('')+'</div>':'')+
+    '<button class="btn mint" data-a="start">עוד סיבוב ▶</button><div class="row"><button class="btn sun" data-a="garden">הגינה 🌻</button><button class="btn ghost" data-a="home">הביתה</button></div></div>';
+  confetti(30);
+  say('כל הכבוד אביגיל! קיבלת '+G.stars+' כוכבים.');
+}
+
+/* ---------- events ---------- */
+var resetArm=false;
+app.addEventListener('click',function(e){
+  var b=e.target.closest('[data-a]'); if(!b) return; var a=b.getAttribute('data-a'), i=+b.getAttribute('data-i');
+  if(a==='start') startSession();
+  else if(a==='home'){try{speechSynthesis.cancel()}catch(x){} G=null; home()}
+  else if(a==='garden') garden();
+  else if(a==='flower'){var c=b.getAttribute('data-c'); garden(c); sayLetter(LET[c])}
+  else if(a==='snd'){S.sound=!S.sound; save(); home()}
+  else if(a==='opt') pickOpt(i);
+  else if(a==='tile') pickTile(i);
+  else if(a==='next'){G.i++; nextQ()}
+  else if(a==='replay'){var q=G.q; if(q.type==='sound') sayLetter(LET[q.item.c]); else say(itemWord(q))}
+  else if(a==='sound') soundOut();
+  else if(a==='reset1'){b.textContent='ללחוץ שוב כדי למחוק הכול'; b.setAttribute('data-a','reset2')}
+  else if(a==='reset2'){S=fresh(); save(); home()}
+});
+home();
+if(window.claude&&window.claude.hot&&window.claude.hot.snapshot){}
+})();
+</script>
+
+</html>
