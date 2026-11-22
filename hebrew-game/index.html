@@ -152,7 +152,7 @@ function load(){
   try{var r=localStorage.getItem(KEY); if(r) return Object.assign(fresh(),JSON.parse(r))}catch(e){}
   return mem||fresh();
 }
-var S=load();
+var S=load(); S.sound=true; /* sound always starts on */
 function save(){mem=S; try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function it(k){return S.items[k]||(S.items[k]={s:0,seen:0,ok:0,miss:0,conf:{}})}
 function unlockedN(){
@@ -238,7 +238,7 @@ function home(){
     '<div style="margin-top:8px"><label for="vsel">קול:</label> <select id="vsel" style="font-size:16px;max-width:100%">'+voiceOpts()+'</select></div>'+'<div id="vres" style="margin-top:6px"></div>'+
     '<div class="small" style="margin-top:6px">באייפון: כבו מצב שקט (המתג בצד), הגבירו עוצמה. להוספת קול עברי: הגדרות ← נגישות ← תוכן מדובר ← קולות ← עברית, והורדה של Carmit.</div></div>';
   app.className=''; app.innerHTML=
-   '<div class="top"><button class="icon" data-a="snd" aria-label="צליל">'+(S.sound?'🔊':'🔇')+'</button><div style="flex:1"></div><button class="icon" id="pbtn" aria-label="להורים">⚙️</button></div>'+
+   '<div class="top"><button class="icon" data-a="snd" aria-label="צליל" style="width:auto;padding:0 14px;font-size:20px;font-weight:600">'+(S.sound?'🔊 צליל פועל':'🔇 צליל כבוי, לחצו להפעלה')+'</button><div style="flex:1"></div><button class="icon" id="pbtn" aria-label="להורים">⚙️</button></div>'+
    '<div class="home" style="display:flex;flex-direction:column"><div class="chick">🐥</div><h1>גן האותיות</h1>'+
    '<div class="bubble" style="max-width:100%">שלום אביגיל! בואי נגדל ביחד גינה של אותיות ומילים.</div>'+
    '<button class="btn mint" style="width:100%;font-size:34px;min-height:84px" data-a="start">בואי נשחק ▶</button>'+
