@@ -132,12 +132,7 @@ RAW.forEach(function(r){
 var ORDER=['א','ב','ד','ל','מ','ש','י','ג','ר','ס','פ','נ','ה','ת','ח','כ','ק','ע','ז','ט','צ','ו'];
 var FIN={'ם':'מ','ן':'נ','ץ':'צ','ף':'פ','ך':'כ'};
 function base(c){return FIN[c]||c}
-var WORDS=[
-['אבא','👨'],['אמא','👩'],['דג','🐟'],['דב','🐻'],['יד','✋'],['לב','❤️'],['עץ','🌳'],['שן','🦷'],['ים','🌊'],['גן','🌷'],
-['פה','👄'],['כף','🥄'],['תה','🍵'],['צב','🐢'],['פיל','🐘'],['שמש','☀️'],['סוס','🐴'],['ספר','📖'],['מים','💧'],['כלב','🐶'],
-['בית','🏠'],['גמל','🐪'],['דלי','🪣'],['נר','🕯️'],['כוס','🥛'],['פרח','🌸'],['קוף','🐒'],['רכב','🚗'],['ענב','🍇'],['פנס','🔦'],
-['כסא','🪑'],['ירח','🌙'],['לחם','🍞'],['גזר','🥕'],['תות','🍓'],['דגל','🚩']
-].map(function(x){return {w:x[0],emo:x[1]}});
+var WORDS=[['אבא','👨'],['אמא','👩'],['אף','👃'],['אש','🔥'],['אור','💡'],['אגס','🍐'],['אבן','🪨'],['בית','🏠'],['בצל','🧅'],['ברז','🚰'],['בן','👦'],['בשר','🥩'],['גמל','🐪'],['גזר','🥕'],['גן','🌷'],['גשר','🌉'],['גדי','🐐'],['גרב','🧦'],['דג','🐟'],['דב','🐻'],['דלי','🪣'],['דגל','🚩'],['דלת','🚪'],['דבש','🍯'],['דשא','🌱'],['הר','⛰️'],['ורד','🌹'],['זית','🫒'],['זר','💐'],['חץ','🏹'],['חול','🏖️'],['חבל','🪢'],['חוט','🧵'],['טיל','🚀'],['יד','✋'],['ים','🌊'],['ירח','🌙'],['יער','🌲'],['ילד','🧒'],['ירק','🥬'],['כף','🥄'],['כלב','🐶'],['כוס','🥛'],['כסא','🪑'],['כד','🏺'],['כתר','👑'],['כבש','🐑'],['כסף','💰'],['לב','❤️'],['לחם','🍞'],['מים','💧'],['מפה','🗺️'],['מלח','🧂'],['מיץ','🧃'],['נר','🕯️'],['נחש','🐍'],['נמר','🐅'],['נשר','🦅'],['נעל','👟'],['סוס','🐴'],['ספר','📖'],['סל','🧺'],['סיר','🍲'],['ספה','🛋️'],['עץ','🌳'],['ענב','🍇'],['עין','👁️'],['עט','🖊️'],['עגל','🐮'],['עוף','🍗'],['עיר','🏙️'],['ענן','☁️'],['עלה','🍃'],['פה','👄'],['פיל','🐘'],['פרח','🌸'],['פנס','🔦'],['פרה','🐄'],['פח','🗑️'],['פיה','🧚'],['צב','🐢'],['צבע','🎨'],['קוף','🐒'],['קיר','🧱'],['קרח','🧊'],['קפה','☕'],['קשת','🌈'],['קן','🪺'],['רכב','🚗'],['רגל','🦵'],['רץ','🏃'],['שמש','☀️'],['שן','🦷'],['שיר','🎵'],['שלג','❄️'],['תה','🍵'],['תות','🍓'],['תוף','🥁'],['תיק','🎒']].map(function(x){return {w:x[0],emo:x[1]}});
 var STICKERS=['🦄','🐬','🦋','🐞','🐙','🦊','🐼','🐸','🦒','🐳','🦜','🐝','🐧','🐨','🦉','🐠','🐢','🦀','🐰','🦁'];
 var PRAISE=['f2','f3','f4','f6'];
 var OOPS=['r1','r2','r3','r4'];
@@ -204,7 +199,7 @@ function say(text,rate,force){
 function unlockSpeech(){
   try{var u=new SpeechSynthesisUtterance('א');u.lang='he-IL';u.volume=0;if(voice)u.voice=voice;speechSynthesis.speak(u)}catch(e){}
 }
-function sayLetter(L){return say(L.syl+'. '+L.syl+'. '+L.word)}
+function sayLetter(L,ex){return say(L.syl+'. '+L.syl+'. '+(ex?ex.w:L.word))}
 function rnd(a){return a[Math.floor(Math.random()*a.length)]}
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
 
@@ -308,21 +303,28 @@ function wordOpts(w,n,d,W){
   shuffle(pool).forEach(function(x){if(picks.length<n-1&&picks.indexOf(x)<0)picks.push(x)});
   return shuffle([w].concat(picks)).map(function(x){return {label:x.w,emo:x.emo,ok:x.w===w.w}});
 }
+function examples(c){
+  var L=LET[c], out=[{w:L.word,emo:L.emo}];
+  WORDS.forEach(function(x){if(x.w[0]===c&&x.w!==L.word) out.push({w:x.w,emo:x.emo})});
+  return out;
+}
+function recentSet(){var r=S.recent||[];return r.slice(-8)}
 function makeQ(){
   var c=candidates(), all=c.L.concat(c.W), item=null, easy=false, win=false;
   if(G.retry&&G.i>=G.retry.due){item=all.filter(function(x){return x.key===G.retry.key})[0]||null;easy=!!item;G.retry=null}
   if(!item&&G.i%3===2){
-    var strong=all.filter(function(x){return it(x.key).s>=2&&x.key!==G.last});
+    var rc=recentSet(); var strong=all.filter(function(x){return it(x.key).s>=2&&x.key!==G.last&&rc.indexOf(x.key)<0});
     if(strong.length){item=rnd(strong);win=true}
   }
   if(!item){
-    var pool=(c.W.length>=3&&Math.random()<.4)?c.W:c.L;
-    pool=pool.filter(function(x){return x.key!==G.last}); if(!pool.length) pool=all;
+    var rc2=recentSet(), pool=(c.W.length>=3&&Math.random()<.5)?c.W:c.L;
+    var fresh=pool.filter(function(x){return rc2.indexOf(x.key)<0});
+    pool=fresh.length>=2?fresh:pool.filter(function(x){return x.key!==G.last}); if(!pool.length) pool=all;
     item=wpick(pool);
   }
   var d=it(item.key), n=easy?2:(d.s>=4?4:3), q={item:item,key:item.key,easy:easy,win:win,misses:0,missed:false,done:false,lit:-1};
   if(item.kind==='letter'){
-    q.type=Math.random()<.5?'sound':'pic'; q.opts=letterOpts(item.c,n,d);
+    q.type=Math.random()<.5?'sound':'pic'; q.opts=letterOpts(item.c,n,d); q.ex=rnd(examples(item.c));
   }else{
     var w=item.w; q.type=Math.random()<.5?'build':'read';
     if(q.type==='read') q.opts=wordOpts(w,Math.min(n,3),d,c.W);
@@ -338,13 +340,13 @@ function makeQ(){
 }
 function nextQ(){
   if(G.i>=G.n) return endSession();
-  G.q=makeQ(); G.last=G.q.key; paint();
+  G.q=makeQ(); G.last=G.q.key; S.recent=(S.recent||[]).concat(G.q.key).slice(-12); paint();
   setTimeout(function(){intro(G.q)},300);
 }
-function itemWord(q){return q.item.kind==='letter'?LET[q.item.c].word:q.item.w.w}
+function itemWord(q){return q.item.kind==='letter'?q.ex.w:q.item.w.w}
 function intro(q){
   if(G.q!==q) return;
-  if(q.type==='sound') sayLetter(LET[q.item.c]);
+  if(q.type==='sound') sayLetter(LET[q.item.c],q.ex);
   else if(q.type==='pic') say(itemWord(q)+'. באיזו אות מתחילה המילה?');
   else if(q.type==='build') say('בואי נבנה את המילה '+itemWord(q));
   else say('מה כתוב כאן?');
@@ -360,7 +362,7 @@ function paint(){
   }else if(q.type==='pic'){
     var L=LET[q.item.c];
     prompt='באיזו אות מתחילה המילה?';
-    stage='<div class="pic">'+L.emo+'</div>'+(q.done?'<div class="wordshow"><b>'+L.word[0]+'</b>'+L.word.slice(1)+'</div>':'<button class="btn ghost" data-a="replay">🔊 שמעי שוב</button>');
+    stage='<div class="pic">'+q.ex.emo+'</div>'+(q.done?'<div class="wordshow"><b>'+q.ex.w[0]+'</b>'+q.ex.w.slice(1)+'</div>':'<button class="btn ghost" data-a="replay">🔊 שמעי שוב</button>');
   }else if(q.type==='build'){
     var w=q.item.w; prompt='בואי נבנה את המילה';
     var sl=''; for(var i=0;i<w.w.length;i++) sl+='<div class="slot'+(i<q.pos?' f':(i===q.pos?' cur':''))+'">'+(i<q.pos?w.w[i]:'')+'</div>';
@@ -388,7 +390,7 @@ function paint(){
   }
   var msg=q.msg||(q.easy?'עוד פעם, הפעם קל יותר 🙂':(q.win?'זאת את כבר יודעת!':prompt));
   if(q.done){
-    var rv=q.item.kind==='letter'?('<b>'+q.item.c+'</b> '+LET[q.item.c].syl+' כמו '+LET[q.item.c].word+' '+LET[q.item.c].emo):('<b style="color:var(--ink)">'+q.item.w.w+'</b> '+q.item.w.emo);
+    var rv=q.item.kind==='letter'?('<b>'+q.item.c+'</b> '+LET[q.item.c].syl+' כמו '+q.ex.w+' '+q.ex.emo):('<b style="color:var(--ink)">'+q.item.w.w+'</b> '+q.item.w.emo);
     foot='<div class="reveal">'+rv+'</div><button class="btn mint" data-a="next">'+(G.i+1>=G.n?'סיום 🎉':'הלאה ←')+'</button>';
   }
   app.innerHTML='<div class="top"><button class="icon" data-a="home" aria-label="הביתה">🏠</button><div class="dots">'+dots+'</div><div class="stars">⭐ '+S.stars+'</div></div>'+
@@ -405,7 +407,7 @@ function wrong(q,after){
   var c=rnd(OOPS); q.msg=CL[c].t; save(); paint();
   playClip(c).then(function(){
     if(G.q!==q) return;
-    if(q.type==='sound') sayLetter(LET[q.item.c]); else say(itemWord(q));
+    if(q.type==='sound') sayLetter(LET[q.item.c],q.ex); else say(itemWord(q));
   });
 }
 function finish(q){
@@ -484,7 +486,7 @@ app.addEventListener('click',function(e){
   else if(a==='opt') pickOpt(i);
   else if(a==='tile') pickTile(i);
   else if(a==='next'){G.i++; nextQ()}
-  else if(a==='replay'){var q=G.q; if(q.type==='sound') sayLetter(LET[q.item.c]); else say(itemWord(q))}
+  else if(a==='replay'){var q=G.q; if(q.type==='sound') sayLetter(LET[q.item.c],q.ex); else say(itemWord(q))}
   else if(a==='sound') soundOut();
   else if(a==='reset1'){b.textContent='ללחוץ שוב כדי למחוק הכול'; b.setAttribute('data-a','reset2')}
   else if(a==='reset2'){S=fresh(); save(); home()}
